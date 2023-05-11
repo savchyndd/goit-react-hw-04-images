@@ -33,6 +33,7 @@ export const Modal = ({ largeImageURL, alt, onCloseModal }) => {
 };
 
 Modal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  children: PropTypes.any,
+  largeImageURL: PropTypes.string.isRequired,
+  alt: PropTypes.string,
+  onCloseModal: PropTypes.func.isRequired,
 };

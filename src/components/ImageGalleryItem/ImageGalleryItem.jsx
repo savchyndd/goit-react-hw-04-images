@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { Modal } from 'components/Modal/Modal';
 import { GalleryItem, GalleryImg } from './ImageGalleryItem.module';
@@ -26,4 +27,12 @@ export const ImageGalleryItem = ({
       )}
     </>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  galleryItem: PropTypes.shape({
+    webformatURL: PropTypes.string.isRequired,
+    largeImageURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
+  }).isRequired,
 };
