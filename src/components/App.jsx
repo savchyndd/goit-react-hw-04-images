@@ -26,52 +26,61 @@ export const App = () => {
   useEffect(() => {
     if (!searchQuery) return;
 
+    const fetchGalleryItems = (query, page) => {
+      setLoading(true);
+
+      postApiService.query = query;
+      postApiService.page = page;
+
+      postApiService
+        .fetchPost()
+        .then(data => {
+          const newData = data.hits.map(
+            ({ id, tags, webformatURL, largeImageURL }) => ({
+              id,
+              tags,
+              webformatURL,
+              largeImageURL,
+            })
+          );
+
+          setGalleryItems(prevGalleryItems => [
+            ...prevGalleryItems,
+            ...newData,
+          ]);
+          setTotalHits(data.totalHits);
+
+          if (!data.totalHits) {
+            setError(true);
+
+            return toast.warn(
+              'Sorry, there are no images matching your search query. Please try again.'
+            );
+          }
+
+          if (page === 1) {
+            toast.success(`Hooray! We found ${data.totalHits} images.`);
+          }
+        })
+        .catch(error => {
+          toast.error(error.message);
+          setError(true);
+          setGalleryItems([]);
+          setTotalHits(0);
+          setGalleryPage(1);
+        })
+        .finally(() => setLoading(false));
+    };
+
     fetchGalleryItems(searchQuery, galleryPage);
   }, [searchQuery, galleryPage]);
-
-  const fetchGalleryItems = (query, page) => {
-    setLoading(true);
-    setError(false);
-
-    postApiService.query = query;
-    postApiService.page = page;
-
-    postApiService.fetchPost().then(data => {
-      postApiService.hits = data.totalHits;
-
-      const newData = data.hits.map(
-        ({ id, tags, webformatURL, largeImageURL }) => ({
-          id,
-          tags,
-          webformatURL,
-          largeImageURL,
-        })
-      );
-
-      setGalleryItems(prevGalleryItems => [...prevGalleryItems, ...newData]);
-      setTotalHits(data.totalHits);
-
-      if (!data.totalHits) {
-        setLoading(false);
-        setError(true);
-
-        return toast.warn(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-      }
-
-      if (page === 1) {
-        toast.success(`Hooray! We found ${postApiService.hits} images.`);
-      }
-      setLoading(false);
-      setError(false);
-    });
-  };
 
   const handleFormSubmit = searchQuery => {
     setSearchQuery('');
     setGalleryItems([]);
+    setTotalHits(0);
     setGalleryPage(1);
+    setError(false);
 
     setSearchQuery(searchQuery);
   };

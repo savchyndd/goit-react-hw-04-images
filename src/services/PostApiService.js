@@ -7,7 +7,6 @@ export default class PostsApiService {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
-    this.totalHits = 0;
   }
 
   async fetchPost() {
@@ -21,13 +20,9 @@ export default class PostsApiService {
       per_page: 12,
     });
 
-    try {
-      const response = await axios.get(`${BASE_URL}?${OPTIONS.toString()}`);
-      this.incrementPage();
-      return response.data;
-    } catch (error) {
-      console.error(error.toJSON());
-    }
+    const response = await axios.get(`${BASE_URL}?${OPTIONS.toString()}`);
+    this.incrementPage();
+    return response.data;
   }
 
   get query() {
@@ -36,14 +31,6 @@ export default class PostsApiService {
 
   set query(newQuery) {
     this.searchQuery = newQuery;
-  }
-
-  get hits() {
-    return this.totalHits;
-  }
-
-  set hits(newTotalHits) {
-    this.totalHits = newTotalHits;
   }
 
   incrementPage() {
