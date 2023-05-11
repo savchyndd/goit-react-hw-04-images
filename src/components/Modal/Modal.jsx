@@ -1,20 +1,21 @@
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import { Overlay, ModalContent } from './Modal.module';
 
 export const Modal = ({ largeImageURL, alt, onCloseModal }) => {
   useEffect(() => {
+    const handleKeydown = e => {
+      if (e.code === 'Escape') {
+        onCloseModal();
+      }
+    };
+
     window.addEventListener('keydown', handleKeydown);
     return () => {
       window.removeEventListener('keydown', handleKeydown);
     };
-  }, []);
-
-  const handleKeydown = e => {
-    if (e.code === 'Escape') {
-      onCloseModal();
-    }
-  };
+  }, [onCloseModal]);
 
   const handleBackdropClick = ({ target, currentTarget }) => {
     if (currentTarget === target) {
@@ -29,4 +30,9 @@ export const Modal = ({ largeImageURL, alt, onCloseModal }) => {
       </ModalContent>
     </Overlay>
   );
+};
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  children: PropTypes.any,
 };

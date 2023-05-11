@@ -18,9 +18,9 @@ export const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [galleryItems, setGalleryItems] = useState([]);
   const [galleryPage, setGalleryPage] = useState(1);
+  const [totalHits, setTotalHits] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [isButtonShow, setIsButtonShow] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -47,9 +47,9 @@ export const App = () => {
           largeImageURL,
         })
       );
-      const currentData = [...galleryItems, ...newData];
 
       setGalleryItems(prevGalleryItems => [...prevGalleryItems, ...newData]);
+      setTotalHits(data.totalHits);
 
       if (!data.totalHits) {
         setLoading(false);
@@ -60,19 +60,10 @@ export const App = () => {
         );
       }
 
-      if (currentData.length >= data.totalHits) {
-        setLoading(false);
-        setIsButtonShow(false);
-        setError(false);
-
-        return;
-      }
-
       if (page === 1) {
         toast.success(`Hooray! We found ${postApiService.hits} images.`);
       }
       setLoading(false);
-      setIsButtonShow(true);
       setError(false);
     });
   };
@@ -96,7 +87,9 @@ export const App = () => {
       {error && <h2>Please, enter search word!</h2>}
       {!error && <ImageGallery galleryItems={galleryItems} />}
       {loading && <Loader />}
-      {isButtonShow && <Button onClick={onLoadMore} />}
+      {0 < galleryItems.length && galleryItems.length < totalHits && (
+        <Button onClick={onLoadMore} />
+      )}
 
       {/* Additions  */}
       <ToastContainer autoClose={3000} theme="dark" />
